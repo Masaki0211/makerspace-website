@@ -1,0 +1,1020 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TTU Library Makerspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: sticky top bar \u2192 compact intro with service index \u2192 one section per service, each opening with an "at a glance" fact row */
+:root {
+  --bg: #ffffff;
+  --fg: #111111;
+  --muted: #55504f;
+  --line: #e6e1e0;
+  --tint: #fbf3f2;
+  --red: #b5121b;
+  --red-dark: #8f0e15;
+  --font-display: "Barlow Condensed", "Arial Narrow", Arial, sans-serif;
+  --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --radius: 6px;
+  --gutter: clamp(16px, 4vw, 40px);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; }
+img { max-width: 100%; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+}
+a { color: var(--red); text-underline-offset: 3px; }
+a:hover { color: var(--red-dark); }
+:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; border-radius: 3px; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.05; text-wrap: balance; margin: 0; letter-spacing: .005em; }
+h2 { font-size: clamp(2rem, 4.5vw, 2.75rem); }
+h3 { font-size: 1.45rem; }
+p { margin: 0; }
+.wrap { max-width: 1080px; margin-inline: auto; padding-inline: var(--gutter); }
+.eyebrow { font-size: .78rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--red); }
+
+/* Top bar */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  background: rgba(255,255,255,.96); backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--fg); }
+.brand-mark { width: 30px; height: 30px; border-radius: 4px; background: var(--red); color: #fff; display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+.brand-name { font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; letter-spacing: .02em; }
+.brand-name span { color: var(--muted); font-weight: 600; }
+.nav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.nav::-webkit-scrollbar { display: none; }
+.nav a { white-space: nowrap; text-decoration: none; color: var(--fg); font-weight: 600; font-size: .92rem; padding: 8px 12px; border-radius: 999px; }
+.nav a:hover { background: var(--tint); color: var(--red); }
+.nav a.active { background: var(--red); color: #fff; }
+@media (max-width: 760px) {
+  .topbar .wrap { flex-direction: column; align-items: stretch; gap: 4px; padding-block: 8px; }
+  .nav { margin-inline: -6px; }
+}
+
+/* Intro */
+.intro { padding-block: clamp(40px, 7vw, 72px) 32px; }
+.intro h1 { font-size: clamp(2.8rem, 8vw, 5rem); margin-top: 10px; }
+.intro h1 em { font-style: normal; color: var(--red); }
+.intro .lede { margin-top: 18px; max-width: 62ch; font-size: 1.12rem; color: var(--muted); }
+.location { margin-top: 22px; display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 600; }
+.location .pin { width: 10px; height: 10px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 4px #f6d9db; }
+
+.index { margin-top: 40px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 2px solid var(--fg); }
+.index a { display: flex; flex-direction: column; gap: 6px; padding: 18px 16px 18px 0; text-decoration: none; color: var(--fg); border-bottom: 1px solid var(--line); }
+.index a + a { padding-left: 16px; border-left: 1px solid var(--line); }
+.index a:hover .idx-name { color: var(--red); }
+.idx-name { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; line-height: 1.1; }
+.idx-meta { font-size: .88rem; color: var(--muted); }
+.tag { align-self: flex-start; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; border: 1px solid currentColor; }
+.tag.walk { color: #1d6b3a; }
+.tag.email { color: var(--red); }
+@media (max-width: 860px) {
+  .index { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .index a:nth-child(3) { padding-left: 0; border-left: 0; }
+}
+@media (max-width: 460px) {
+  .index { grid-template-columns: 1fr; }
+  .index a, .index a + a { padding-left: 0; border-left: 0; }
+}
+
+/* Service sections */
+.service { padding-block: clamp(48px, 7vw, 80px); border-top: 1px solid var(--line); }
+.service-head { display: grid; gap: 12px; max-width: 720px; }
+.service-head p { color: var(--muted); font-size: 1.05rem; }
+.glance { margin-top: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.glance div { background: var(--bg); padding: 14px 16px; display: grid; gap: 2px; align-content: start; }
+.glance dt { font-size: .74rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.glance dd { margin: 0; font-weight: 600; }
+.glance dd.big { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--red); line-height: 1.15; }
+.block { margin-top: 44px; display: grid; gap: 18px; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; }
+@media (max-width: 820px) { .two { grid-template-columns: 1fr; } }
+
+/* Email chip */
+.email { display: inline-flex; align-items: center; gap: 2px; border: 1px solid var(--line); border-radius: 999px; padding: 2px 2px 2px 12px; background: var(--bg); max-width: 100%; vertical-align: middle; }
+.email code { font-family: var(--font-mono); font-size: .88rem; user-select: all; overflow-wrap: anywhere; color: var(--fg); }
+.copy { font: inherit; font-size: .78rem; font-weight: 700; color: var(--red); background: var(--tint); border: 0; border-radius: 999px; padding: 4px 10px; cursor: pointer; margin-left: 6px; }
+.copy:hover { background: #f4dfdd; }
+.copy.done { background: var(--red); color: #fff; }
+
+/* Steps */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: step; }
+.steps li { counter-increment: step; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 16px; padding-block: 18px; border-bottom: 1px solid var(--line); }
+.steps li:first-child { border-top: 1px solid var(--line); }
+.steps li::before { content: counter(step); width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--red); color: var(--red); display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; }
+.steps h4 { margin: 4px 0 4px; font-size: 1.05rem; }
+.steps p { color: var(--muted); }
+.steps p + p, .steps ul { margin-top: 8px; }
+.steps ul { padding-left: 18px; color: var(--muted); margin-bottom: 0; }
+.who { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; margin-left: 6px; vertical-align: 2px; }
+.who.you { color: var(--red); border-color: #efc4c6; background: var(--tint); }
+
+/* Reply templates */
+.replies { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.reply { border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: grid; gap: 10px; align-content: start; }
+.reply-label { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.reply-line { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.reply-line q { font-family: var(--font-mono); font-size: 1rem; quotes: none; color: var(--fg); user-select: all; }
+.reply p { font-size: .92rem; color: var(--muted); }
+
+/* Pricing */
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+th { font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); background: #faf8f8; font-weight: 700; }
+td.num { font-family: var(--font-mono); font-size: .92rem; text-align: right; }
+th.num { text-align: right; }
+.note { font-size: .9rem; color: var(--muted); }
+
+/* Estimator */
+.estimator { border: 2px solid var(--fg); border-radius: var(--radius); padding: 20px; display: grid; gap: 16px; }
+.estimator h3 { font-size: 1.35rem; }
+.fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 460px) { .fields { grid-template-columns: 1fr; } }
+.printers { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
+.printers legend { font-size: .82rem; font-weight: 700; padding: 0; margin-bottom: 8px; }
+.printer-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; padding: 6px 10px; border: 1px solid #cfc8c7; border-radius: 4px; flex-wrap: wrap; }
+.printer-row.on { border-color: var(--red); background: var(--tint); }
+.printer-row label.pick { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600; flex: 1 1 auto; }
+.printer-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--red); margin: 0; }
+.printer-row .fee { font-family: var(--font-mono); font-size: .82rem; color: var(--muted); font-weight: 500; }
+.runs { display: flex; align-items: center; gap: 8px; font-size: .85rem; color: var(--muted); }
+.runs input { font: inherit; width: 72px; padding: 6px 8px; border: 1px solid #cfc8c7; border-radius: 4px; background: #fff; color: var(--fg); }
+.runs input:focus { outline: 2px solid var(--red); outline-offset: 0; border-color: var(--red); }
+.printer-row .only { font-size: .74rem; font-weight: 700; color: var(--red); }
+.fleet { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 900px) { .fleet { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 500px) { .fleet { grid-template-columns: 1fr; } }
+.printer { border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: grid; gap: 12px; align-content: start; }
+.printer h4 { font-family: var(--font-display); font-size: 1.4rem; line-height: 1.1; margin: 0; }
+.printer h4 small { display: block; font-family: var(--font-body); font-size: .82rem; font-weight: 500; color: var(--muted); margin-top: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: .74rem; font-weight: 700; letter-spacing: .04em; padding: 2px 8px; border-radius: 4px; background: var(--tint); color: var(--red); }
+.spec { display: grid; gap: 2px; }
+.spec dt { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.spec dd { margin: 0; font-family: var(--font-mono); font-size: .9rem; font-variant-numeric: tabular-nums; }
+.printer p { font-size: .9rem; color: var(--muted); }
+.field-error { font-size: .82rem; color: var(--red); font-weight: 600; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .82rem; font-weight: 700; }
+.field input, .field select { font: inherit; padding: 9px 10px; border: 1px solid #cfc8c7; border-radius: 4px; background: #fff; color: var(--fg); width: 100%; }
+.field input:focus, .field select:focus { outline: 2px solid var(--red); outline-offset: 0; border-color: var(--red); }
+.breakdown { display: grid; gap: 6px; font-variant-numeric: tabular-nums; border-top: 1px solid var(--line); padding-top: 14px; }
+.breakdown div { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); }
+.breakdown span:last-child { font-family: var(--font-mono); font-size: .92rem; color: var(--fg); }
+.breakdown .total { color: var(--fg); font-weight: 700; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 4px; }
+.breakdown .total span:last-child { font-size: 1.15rem; color: var(--red); }
+
+/* Callouts */
+.callout { border-left: 4px solid var(--red); background: var(--tint); padding: 16px 18px; border-radius: 0 var(--radius) var(--radius) 0; display: grid; gap: 6px; }
+.callout strong { font-size: 1rem; }
+.callout p { color: #3d3837; }
+.checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.checklist li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; }
+.checklist li::before { content: ""; width: 16px; height: 16px; margin-top: 4px; border: 2px solid var(--red); border-radius: 3px; }
+.checklist li.optional::before { border-style: dashed; }
+.checklist small { color: var(--muted); }
+
+/* Equipment list */
+.equip { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
+.equip li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-block: 12px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.equip .model { font-weight: 600; }
+.equip .model small { display: block; font-weight: 400; color: var(--muted); font-size: .88rem; }
+.card { border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: grid; gap: 12px; align-content: start; }
+.card .tag { margin-bottom: 2px; }
+
+/* Chat assistant */
+.chat-toggle {
+  position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 30;
+  display: inline-flex; align-items: center; gap: 8px; border: 0; cursor: pointer;
+  background: var(--red); color: #fff; font: inherit; font-weight: 700; font-size: .95rem;
+  padding: 12px 18px 12px 14px; border-radius: 999px; box-shadow: 0 6px 20px rgba(140, 14, 21, .28);
+}
+.chat-toggle:hover { background: var(--red-dark); }
+.chat-toggle svg { width: 20px; height: 20px; }
+.chat-panel {
+  position: fixed; top: env(safe-area-inset-top, 0px); right: 0; bottom: 0; z-index: 40;
+  width: min(400px, 100vw); background: var(--bg); border-left: 1px solid var(--line);
+  box-shadow: -12px 0 32px rgba(0,0,0,.08);
+  display: flex; flex-direction: column;
+  transform: translateX(0); transition: transform .22s ease;
+}
+.chat-panel.closed { transform: translateX(105%); visibility: hidden; transition: transform .22s ease, visibility 0s .22s; }
+@media (prefers-reduced-motion: reduce) { .chat-panel, .chat-panel.closed { transition: none; } }
+.chat-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.chat-head h2 { font-size: 1.4rem; }
+.chat-head p { font-size: .8rem; color: var(--muted); }
+.chat-close { border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 4px; width: 36px; height: 36px; cursor: pointer; font-size: 1.2rem; line-height: 1; }
+.chat-close:hover { border-color: var(--red); color: var(--red); }
+.chat-log { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.msg { max-width: 88%; padding: 10px 13px; border-radius: 10px; font-size: .93rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg.bot { align-self: flex-start; background: #f5f2f2; border-top-left-radius: 2px; }
+.msg.user { align-self: flex-end; background: var(--red); color: #fff; border-top-right-radius: 2px; }
+.msg.thinking { color: var(--muted); font-style: italic; }
+.msg.error { background: var(--tint); color: var(--red-dark); }
+.suggest { display: flex; flex-wrap: wrap; gap: 6px; }
+.suggest button { font: inherit; font-size: .82rem; border: 1px solid #efc4c6; background: var(--bg); color: var(--red); border-radius: 999px; padding: 5px 11px; cursor: pointer; text-align: left; }
+.suggest button:hover { background: var(--tint); }
+.chat-form { display: flex; gap: 8px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); }
+.chat-form textarea { flex: 1; min-width: 0; font: inherit; font-size: .93rem; resize: none; border: 1px solid #cfc8c7; border-radius: 6px; padding: 9px 11px; max-height: 120px; color: var(--fg); background: #fff; }
+.chat-form textarea:focus { outline: 2px solid var(--red); outline-offset: 0; border-color: var(--red); }
+.chat-form button { font: inherit; font-weight: 700; border: 0; border-radius: 6px; background: var(--red); color: #fff; padding: 0 16px; cursor: pointer; }
+.chat-form button:disabled { background: #d9b3b5; cursor: default; }
+.ai-bar { padding: 12px 16px; border-bottom: 1px solid var(--line); background: #faf8f8; display: grid; gap: 8px; }
+.ai-bar p { font-size: .8rem; color: var(--muted); }
+.ai-start { font: inherit; font-size: .85rem; font-weight: 700; border: 1px solid var(--red); color: var(--red); background: var(--bg); border-radius: 6px; padding: 8px 12px; cursor: pointer; justify-self: start; }
+.ai-start:hover:not(:disabled) { background: var(--tint); }
+.ai-start:disabled { cursor: default; opacity: .8; }
+.ai-progress { height: 6px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.ai-progress span { display: block; height: 100%; width: 0; background: var(--red); transition: width .2s; }
+.ans-link { font-size: .85rem; font-weight: 700; }
+.chat-foot { padding: 0 16px 10px; font-size: .74rem; color: var(--muted); }
+.msg.bot:has(.ans) { max-width: 100%; display: grid; gap: 8px; white-space: normal; }
+.ans { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 4px; }
+.ans.faq { border-style: dashed; }
+.ans-lead { font-size: .82rem; font-weight: 700; color: var(--muted); }
+.ans-title { font-weight: 700; font-size: .88rem; }
+.ans-text { font-size: .88rem; color: #3d3837; }
+.ans-link { font-size: .82rem; font-weight: 700; justify-self: start; }
+.ans-foot { font-size: .8rem; color: var(--muted); }
+
+footer { border-top: 2px solid var(--fg); padding-block: 32px 48px; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px 32px; }
+footer p { color: var(--muted); font-size: .92rem; }
+footer strong { color: var(--fg); }
+</style>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="TTU Library Makerspace home">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span class="brand-name">Makerspace <span>&#xb7; TTU Library</span></span>
+    </a>
+    <nav class="nav" aria-label="Services">
+      <a href="#printing">3D Printing</a>
+      <a href="#soldering">Soldering</a>
+      <a href="#textiles">Textiles</a>
+      <a href="#laser">Laser Cutter &amp; Cricut</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="intro">
+    <div class="wrap">
+      <p class="eyebrow">Texas Tech University Libraries</p>
+      <h1>Make it at the <em>Makerspace</em>.</h1>
+      <p class="lede">The Makerspace offers 3D printing, soldering, sewing and embroidery, laser cutting, and Cricut cutting. Students, faculty, and staff are all welcome to use our services.</p>
+      <p class="location"><span class="pin" aria-hidden="true"></span>TTU Library, Room 210 &#xb7; Front desk</p>
+
+      <nav class="index" aria-label="Service overview">
+        <a href="#printing">
+          <span class="tag email">By email</span>
+          <span class="idx-name">3D Printing</span>
+          <span class="idx-meta">ABS, PLA, TPU &#xb7; priced per gram</span>
+        </a>
+        <a href="#soldering">
+          <span class="tag walk">Walk in</span>
+          <span class="idx-name">Soldering</span>
+          <span class="idx-meta">New to soldering? Learn from staff</span>
+        </a>
+        <a href="#textiles">
+          <span class="tag walk">Walk in</span>
+          <span class="idx-name">Textiles</span>
+          <span class="idx-meta">Sewing, iron &#xb7; embroidery by appointment</span>
+        </a>
+        <a href="#laser">
+          <span class="tag email">By email</span>
+          <span class="idx-name">Laser Cutter &amp; Cricut</span>
+          <span class="idx-meta">$2 per hour &#xb7; bring your own materials</span>
+        </a>
+      </nav>
+    </div>
+  </section>
+
+  <!-- ============ 3D PRINTING ============ -->
+  <section class="service" id="printing" aria-labelledby="printing-title">
+    <div class="wrap">
+      <div class="service-head">
+        <p class="eyebrow">Service</p>
+        <h2 id="printing-title">3D Printing</h2>
+        <p>Email us your STL files and we print them for you. You approve a quote before anything goes in the queue, then pick up and pay at the front desk.</p>
+      </div>
+
+      <dl class="glance">
+        <div><dt>Start by emailing</dt><dd><span class="email"><code>make@ttu.edu</code><button class="copy" type="button" data-copy="make@ttu.edu">Copy</button></span></dd></div>
+        <div><dt>ABS</dt><dd class="big">$0.10 / g</dd></div>
+        <div><dt>PLA &amp; TPU</dt><dd class="big">$0.30 / g</dd></div>
+        <div><dt>Payment</dt><dd>At pickup, Room 210 front desk</dd></div>
+      </dl>
+
+      <div class="block two">
+        <div class="block" style="margin-top:0">
+          <h3>What to include in your email</h3>
+          <ul class="checklist">
+            <li><span>Your <strong>STL file(s)</strong> as attachments</span></li>
+            <li><span><strong>Quantity</strong> of each file</span></li>
+            <li><span><strong>Color</strong> for each file</span></li>
+            <li><span><strong>Material</strong> for each file: ABS, PLA, TPU, etc.</span></li>
+            <li class="optional"><span>Say that you are <strong>paying with a FOP</strong><br><small>Only if you plan to use a FOP. Otherwise, leave this out.</small></span></li>
+          </ul>
+        </div>
+        <div class="callout" style="align-self:start">
+          <strong>Failed prints are still charged</strong>
+          <p>If a print fails, we will reprint it up to two more times. If every attempt fails, you take the failed print and still pay for it.</p>
+          <p>Please send a well-designed STL file so your print succeeds the first time.</p>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>How it works</h3>
+        <ol class="steps">
+          <li><div>
+            <h4>Send your files <span class="who you">You</span></h4>
+            <p>Email your STL files to <strong>make@ttu.edu</strong> with the quantity, color, and material for each file. Mention FOP up front if you are using one.</p>
+          </div></li>
+          <li><div>
+            <h4>We prepare your quote <span class="who">Makerspace</span></h4>
+            <p>A student assistant slices your files to find the weight in grams, using KISSlicer for ABS and TPU or UltiMaker for PLA. The invoice adds material cost, a service fee for each printer run, and 8.25% sales tax.</p>
+          </div></li>
+          <li><div>
+            <h4>Approve or cancel by email <span class="who you">You</span></h4>
+            <p>Review the invoice and reply to the same email thread. If you are paying with a FOP, attach it to your approval.</p>
+          </div></li>
+          <li><div>
+            <h4>Your job enters the queue <span class="who">Makerspace</span></h4>
+            <p>Once approved, your files are printed in order. When every part is done, you get a <strong>3D print pickup</strong> email.</p>
+          </div></li>
+          <li><div>
+            <h4>Pay and pick up <span class="who you">You</span></h4>
+            <p>Come to the Makerspace front desk in TTU Library Room 210, pay, and take your prints.</p>
+          </div></li>
+        </ol>
+      </div>
+
+      <div class="block">
+        <h3>Our printers</h3>
+        <div class="fleet">
+          <article class="printer">
+            <h4>Polyprinter 229</h4>
+            <div class="chips"><span class="chip">ABS</span><span class="chip">TPU</span></div>
+            <dl class="spec"><dt>Max build size</dt><dd>229 &#xd7; 229 &#xd7; 229 mm</dd></dl>
+            <p>Our everyday printer for ABS and flexible TPU parts.</p>
+          </article>
+          <article class="printer">
+            <h4>Polyprinter 508</h4>
+            <div class="chips"><span class="chip">ABS</span></div>
+            <dl class="spec"><dt>Max build size</dt><dd>508 &#xd7; 229 &#xd7; 229 mm</dd></dl>
+            <p>Extra-long bed for ABS parts too big for the 229.</p>
+          </article>
+          <article class="printer">
+            <h4>U3<small>UltiMaker 3</small></h4>
+            <div class="chips"><span class="chip">Black PLA only</span></div>
+            <dl class="spec"><dt>Max build size</dt><dd>215 &#xd7; 215 &#xd7; 200 mm</dd></dl>
+            <p>Fine detail, with layers as thin as 0.02 mm.</p>
+          </article>
+          <article class="printer">
+            <h4>US7<small>UltiMaker S7</small></h4>
+            <div class="chips"><span class="chip">PLA</span></div>
+            <dl class="spec"><dt>Max build size</dt><dd>330 &#xd7; 240 &#xd7; 300 mm</dd></dl>
+            <p>Our largest PLA printer, with a dual-nozzle print head.</p>
+          </article>
+        </div>
+        <p class="note">Sizes are width &#xd7; depth &#xd7; height. Your part must fit inside the build size of a printer that runs your material.</p>
+      </div>
+
+      <div class="block">
+        <h3>Replying to your invoice</h3>
+        <div class="replies">
+          <div class="reply">
+            <span class="reply-label">To approve</span>
+            <div class="reply-line"><q>I approve</q><button class="copy" type="button" data-copy="I approve">Copy</button></div>
+            <p>Paying with a FOP? Attach the FOP to this reply.</p>
+          </div>
+          <div class="reply">
+            <span class="reply-label">To cancel</span>
+            <div class="reply-line"><q>I want to cancel</q><button class="copy" type="button" data-copy="I want to cancel">Copy</button></div>
+            <p>Send this as your cancellation email.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="block two">
+        <div class="block" style="margin-top:0">
+          <h3>Pricing</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Material</th><th class="num">Price per gram</th></tr></thead>
+              <tbody>
+                <tr><td>ABS</td><td class="num">$0.10</td></tr>
+                <tr><td>PLA</td><td class="num">$0.30</td></tr>
+                <tr><td>TPU</td><td class="num">$0.30</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Printer</th><th class="num">Service fee per run</th></tr></thead>
+              <tbody>
+                <tr><td>Polyprinter 229</td><td class="num">$1.00</td></tr>
+                <tr><td>Polyprinter 508</td><td class="num">$2.00</td></tr>
+                <tr><td>U3</td><td class="num">$1.00</td></tr>
+                <tr><td>US7</td><td class="num">$2.00</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="note">8.25% sales tax is added to the subtotal. Staff choose the printer, so the service fee on your invoice is final.</p>
+        </div>
+
+        <form class="estimator" id="estimator" aria-labelledby="est-title" novalidate>
+          <div>
+            <p class="eyebrow">Rough estimate</p>
+            <h3 id="est-title">Price estimator</h3>
+          </div>
+          <div class="fields">
+            <div class="field">
+              <label for="est-material">Material</label>
+              <select id="est-material">
+                <option value="abs">ABS &#xb7; $0.10/g</option>
+                <option value="pla" selected>PLA &#xb7; $0.30/g</option>
+                <option value="tpu">TPU &#xb7; $0.30/g</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="est-grams">Weight (g)</label>
+              <input id="est-grams" type="number" min="0" step="1" value="40" inputmode="decimal">
+            </div>
+          </div>
+          <fieldset class="printers" id="est-printers">
+            <legend>Printer runs</legend>
+            <div class="printer-row" data-fee="1" data-materials="abs tpu">
+              <label class="pick"><input type="checkbox" id="pr-229"> Polyprinter 229 <span class="fee">+$1/run</span></label>
+              <span class="runs" hidden><label for="pr-229-n">Runs</label><input id="pr-229-n" type="number" min="1" step="1" value="1" inputmode="numeric"></span>
+            </div>
+            <div class="printer-row" data-fee="2" data-materials="abs">
+              <label class="pick"><input type="checkbox" id="pr-508"> Polyprinter 508 <span class="fee">+$2/run</span></label>
+              <span class="runs" hidden><label for="pr-508-n">Runs</label><input id="pr-508-n" type="number" min="1" step="1" value="1" inputmode="numeric"></span>
+            </div>
+            <div class="printer-row" data-fee="1" data-materials="pla">
+              <label class="pick"><input type="checkbox" id="pr-u3"> U3 <span class="fee">+$1/run</span> <span class="only">Black PLA only</span></label>
+              <span class="runs" hidden><label for="pr-u3-n">Runs</label><input id="pr-u3-n" type="number" min="1" step="1" value="1" inputmode="numeric"></span>
+            </div>
+            <div class="printer-row" data-fee="2" data-materials="pla">
+              <label class="pick"><input type="checkbox" id="pr-us7" checked> US7 <span class="fee">+$2/run</span></label>
+              <span class="runs" hidden><label for="pr-us7-n">Runs</label><input id="pr-us7-n" type="number" min="1" step="1" value="1" inputmode="numeric"></span>
+            </div>
+            <p class="field-error" id="runs-error" hidden>Enter a whole number of runs, 1 or more.</p>
+          </fieldset>
+          <div class="breakdown" aria-live="polite">
+            <div><span>Material</span><span id="out-material">$12.00</span></div>
+            <div><span>Service fee</span><span id="out-fee">$2.00</span></div>
+            <div><span>Tax (8.25%)</span><span id="out-tax">$1.16</span></div>
+            <div class="total"><span>Estimated total</span><span id="out-total">$15.16</span></div>
+          </div>
+          <p class="note">For planning only. Your emailed invoice is the official price.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SOLDERING ============ -->
+  <section class="service" id="soldering" aria-labelledby="soldering-title">
+    <div class="wrap">
+      <div class="service-head">
+        <p class="eyebrow">Service</p>
+        <h2 id="soldering-title">Soldering Station</h2>
+        <p>If you already know how to solder, come in any time the Makerspace is open and use the station. No reservation needed.</p>
+      </div>
+      <dl class="glance">
+        <div><dt>Reservation</dt><dd class="big">Not needed</dd></div>
+        <div><dt>Who can use it</dt><dd>Anyone with soldering experience</dd></div>
+        <div><dt>Where</dt><dd>TTU Library, Room 210</dd></div>
+      </dl>
+      <div class="block">
+        <div class="callout">
+          <strong>Never soldered before?</strong>
+          <p>Email Sean to learn soldering before using the station on your own.</p>
+          <p><span class="email"><code>sean.scully@ttu.edu</code><button class="copy" type="button" data-copy="sean.scully@ttu.edu">Copy</button></span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TEXTILES ============ -->
+  <section class="service" id="textiles" aria-labelledby="textiles-title">
+    <div class="wrap">
+      <div class="service-head">
+        <p class="eyebrow">Service</p>
+        <h2 id="textiles-title">Textile Station</h2>
+        <p>Sewing machines and the iron are open to everyone, no reservation needed. The embroidery machine is used by appointment with our textile machine specialist.</p>
+      </div>
+      <dl class="glance">
+        <div><dt>Sewing machines</dt><dd class="big">Walk in</dd></div>
+        <div><dt>Iron</dt><dd class="big">Walk in</dd></div>
+        <div><dt>Embroidery machine</dt><dd class="big">Free &#xb7; Appointment</dd></div>
+      </dl>
+      <div class="block two">
+        <div class="block" style="margin-top:0">
+          <h3>Sewing machines</h3>
+          <ul class="equip">
+            <li><span class="model">JANOME Model 128</span><span class="tag walk">Walk in</span></li>
+            <li><span class="model">Kenmore 385.15202400</span><span class="tag walk">Walk in</span></li>
+            <li><span class="model">Brother XL-2600i</span><span class="tag walk">Walk in</span></li>
+            <li><span class="model">Iron</span><span class="tag walk">Walk in</span></li>
+          </ul>
+          <p class="note">All sewing machines were donated to the Makerspace.</p>
+        </div>
+        <div class="card">
+          <span class="tag email">By appointment</span>
+          <h3>Embroidery machine</h3>
+          <p>The embroidery machine is <strong>free to use</strong>. Book a time with Hannah, our textile machine specialist, before using it.</p>
+          <p><span class="email"><code>hannwall@ttu.edu</code><button class="copy" type="button" data-copy="hannwall@ttu.edu">Copy</button></span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LASER CUTTER & CRICUT ============ -->
+  <section class="service" id="laser" aria-labelledby="laser-title">
+    <div class="wrap">
+      <div class="service-head">
+        <p class="eyebrow">Service</p>
+        <h2 id="laser-title">Laser Cutter &amp; Cricut</h2>
+        <p>Use the laser cutter or Cricut machine during a scheduled session with Makerspace staff. You bring your own materials and design files.</p>
+      </div>
+      <dl class="glance">
+        <div><dt>Start by emailing</dt><dd><span class="email"><code>make@ttu.edu</code><button class="copy" type="button" data-copy="make@ttu.edu">Copy</button></span></dd></div>
+        <div><dt>Cost</dt><dd class="big">$2 / hour</dd></div>
+        <div><dt>Payment</dt><dd>After your session</dd></div>
+        <div><dt>You provide</dt><dd>All materials and files</dd></div>
+      </dl>
+      <div class="block">
+        <h3>How to book</h3>
+        <ol class="steps">
+          <li><div>
+            <h4>Email the Makerspace <span class="who you">You</span></h4>
+            <p>Send a request to <strong>make@ttu.edu</strong> saying you want to use the laser cutter or the Cricut machine.</p>
+          </div></li>
+          <li><div>
+            <h4>Your request goes to staff <span class="who">Makerspace</span></h4>
+            <p>A student assistant forwards your email to staff, and a staff member contacts you directly.</p>
+          </div></li>
+          <li><div>
+            <h4>Set a time <span class="who you">You</span></h4>
+            <p>Agree on a reservation time with the staff member.</p>
+          </div></li>
+          <li><div>
+            <h4>Make it, then pay <span class="who you">You</span></h4>
+            <p>Bring your materials and files to your session. You pay afterward at $2 per hour.</p>
+          </div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>TTU Library Makerspace</strong><br>Texas Tech University Library, Room 210</p>
+    <p><strong>General questions &amp; requests</strong><br>make@ttu.edu</p>
+  </div>
+</footer>
+
+<button class="chat-toggle" id="chat-toggle" type="button" aria-controls="chat-panel" aria-expanded="false">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+  Ask the Makerspace
+</button>
+
+<aside class="chat-panel closed" id="chat-panel" aria-labelledby="chat-title" aria-hidden="true">
+  <div class="chat-head">
+    <div>
+      <h2 id="chat-title">Makerspace Assistant</h2>
+      <p id="ai-status-line">Checking the AI&#x2026;</p>
+    </div>
+    <button class="chat-close" id="chat-close" type="button" aria-label="Hide assistant">&#xd7;</button>
+  </div>
+  <div class="chat-log" id="chat-log" aria-live="polite">
+    <div class="msg bot">Hi! Ask me about 3D printing, soldering, the textile station, or the laser cutter and Cricut.</div>
+    <div class="suggest" id="chat-suggest">
+      <button type="button">How much does a PLA print cost?</button>
+      <button type="button">How do I approve my invoice?</button>
+      <button type="button">Can I use the embroidery machine?</button>
+    </div>
+  </div>
+  <form class="chat-form" id="chat-form">
+    <label for="chat-input" style="position:absolute;left:-9999px">Your question</label>
+    <textarea id="chat-input" rows="1" placeholder="Type your question&#x2026;"></textarea>
+    <button type="submit" id="chat-send">Send</button>
+  </form>
+  <p class="chat-foot">The assistant can make mistakes. For anything official, email make@ttu.edu.</p>
+</aside>
+
+<script>
+/* Common questions from the Makerspace question log.
+   Add entries as { q: "question", a: "answer" }. */
+/* Common questions from the Makerspace question log. */
+var MAKERSPACE_FAQ = [
+  /* FAQ data removed from the public repo (contains private question-log data). */
+];
+
+</script>
+
+<script>
+/* Makerspace assistant (front desk kiosk).
+   - AI answers: an open model runs on this computer with Ollama (http://localhost:11434).
+     No API key, no internet needed, nothing leaves the computer.
+   - Basic answers: if Ollama is not running, the best single match from FACTS and the FAQ is shown.
+   - The chat clears itself after IDLE_SECONDS without activity, so the next visitor starts fresh. */
+(function () {
+  var OLLAMA_URL = 'http://localhost:11434';
+  var OLLAMA_MODEL = 'qwen2.5:3b';   // must match the model you pulled with "ollama pull"
+  var IDLE_SECONDS = 120;
+
+  // Everything the AI is allowed to state. Update this when a policy or price changes.
+  var FACTS = [
+    'TTU Library Makerspace: Texas Tech University Library, Room 210, front desk. General email: make@ttu.edu. Students, faculty, staff and other students can all use it.',
+    '3D PRINTING: 1) Email STL files to make@ttu.edu with the quantity, color and material (ABS, PLA, TPU, etc.) for each file. If paying with a FOP, say so in this first email; otherwise no need to mention payment. 2) A student assistant slices the files (KISSlicer for ABS/TPU, UltiMaker software for PLA) and emails an invoice. 3) To approve, reply "I approve" (attach the FOP if using one). To cancel, reply "I want to cancel". 4) The job goes into the print queue; when every part is done, the patron gets a 3D print pickup email. 5) Pay and pick up at the Room 210 front desk.',
+    '3D PRINT PRICES: ABS $0.10 per gram. PLA $0.30 per gram. TPU $0.30 per gram. Service fee per printer run: Polyprinter 229 $1, Polyprinter 508 $2, U3 $1, US7 $2. Then 8.25% sales tax on the subtotal. Example: 40 g of PLA on the US7 = $12.00 + $2.00 = $14.00, plus tax $1.16 = $15.16. Staff choose the printer.',
+    'PRINTERS (max build size width x depth x height): Polyprinter 229, ABS and TPU, 229 x 229 x 229 mm. Polyprinter 508, ABS only, 508 x 229 x 229 mm, for long ABS parts. U3 (UltiMaker 3), black PLA only, 215 x 215 x 200 mm. US7 (UltiMaker S7), PLA, 330 x 240 x 300 mm, the largest PLA printer.',
+    'FAILED PRINTS: staff reprint up to 2 more times. If all attempts fail, the patron takes the failed print and still pays. Send a well-designed STL file.',
+    'SOLDERING STATION: anyone with soldering experience can walk in and use it, no reservation. People without experience can email Sean at sean.scully@ttu.edu to learn soldering.',
+    'TEXTILE STATION: sewing machines (JANOME Model 128, Kenmore 385.15202400, Brother XL-2600i, all donated) and an iron are free for anyone to use with no reservation. The embroidery machine is free but needs an appointment with Hannah, the textile machine specialist, at hannwall@ttu.edu.',
+    'LASER CUTTER AND CRICUT: email make@ttu.edu; a student assistant forwards it to staff and a staff member contacts the patron to set a reservation time. Cost is $2 per hour, paid after the session. The patron brings all materials and design files.'
+  ].join('\n');
+
+  var panel = document.getElementById('chat-panel');
+  var toggle = document.getElementById('chat-toggle');
+  var closeBtn = document.getElementById('chat-close');
+  var log = document.getElementById('chat-log');
+  var form = document.getElementById('chat-form');
+  var input = document.getElementById('chat-input');
+  var send = document.getElementById('chat-send');
+  var suggest = document.getElementById('chat-suggest');
+  var statusLine = document.getElementById('ai-status-line');
+
+  var aiReady = false, busy = false, history = [];
+  var startLog = log.innerHTML;
+
+  function setOpen(open) {
+    panel.classList.toggle('closed', !open);
+    panel.setAttribute('aria-hidden', String(!open));
+    toggle.hidden = open;
+    toggle.setAttribute('aria-expanded', String(open));
+    if (open) { setTimeout(function () { input.focus(); }, 50); checkAI(); } else toggle.focus();
+  }
+  toggle.addEventListener('click', function () { setOpen(true); });
+  closeBtn.addEventListener('click', function () { setOpen(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !panel.classList.contains('closed')) setOpen(false); });
+
+  /* ---------- Finding related information ---------- */
+  var STOP = new Set('a an the is are was were be to of and or in on at for with by from it this that i you my your we our me can do does did what when who which will would could should there have has had any if about just get want need please hi hello thanks thank'.split(' '));
+  var SYNONYMS = {
+    cost: 'price', costs: 'price', much: 'price', fee: 'price', fees: 'price', charge: 'price', pay: 'price', payment: 'price', expensive: 'price', cheap: 'price', money: 'price',
+    book: 'appointment', booking: 'appointment', reserve: 'appointment', reservation: 'appointment', schedule: 'appointment',
+    sew: 'sewing', embroider: 'embroidery', solder: 'soldering', cut: 'cutter', cutting: 'cutter',
+    printer: 'print', printing: 'print', prints: 'print', printed: 'print', '3d': 'print',
+    approval: 'approve', accept: 'approve', confirm: 'approve', cancellation: 'cancel',
+    pick: 'pickup', collect: 'pickup', ready: 'pickup', failed: 'fail', failure: 'fail', reprint: 'fail',
+    size: 'build', big: 'build', large: 'build', biggest: 'build', max: 'build', maximum: 'build',
+    colour: 'color', colors: 'color', file: 'stl', files: 'stl', where: 'room', location: 'room', located: 'room'
+  };
+  function tokens(s) {
+    var out = [];
+    (s.toLowerCase().match(/[a-z0-9]+/g) || []).forEach(function (w) {
+      var raw = w;
+      if (STOP.has(w) && !SYNONYMS[w]) return;
+      if (w.length > 4) w = w.replace(/(ing|ed|es|s)$/, '');
+      if (w.length < 2) return;
+      out.push(w);
+      var syn = SYNONYMS[raw] || SYNONYMS[w];
+      if (syn && syn !== w) out.push(syn);
+    });
+    return out;
+  }
+  var docs = [];
+  function addDoc(kind, title, text, href) {
+    text = text.replace(/\s+/g, ' ').trim();
+    if (!text) return;
+    var extra = text.indexOf('$') !== -1 ? ' price' : '';
+    docs.push({ kind: kind, title: title, text: text, href: href, set: new Set(tokens(title + ' ' + title + ' ' + text + extra)) });
+  }
+  document.querySelectorAll('main .service').forEach(function (sec) {
+    var service = sec.querySelector('h2').textContent.trim();
+    sec.querySelectorAll('.service-head p:not(.eyebrow), .glance > div, .checklist, .callout, .steps li, .reply, .printer, .equip, .card, table').forEach(function (el) {
+      var heading = el.matches('.checklist, table, .equip') ? null : el.querySelector('h4, h3, dt, .reply-label, strong');
+      if (heading && heading.firstChild) heading = heading.firstChild;
+      var blockTitle = el.closest('.block') && el.closest('.block').querySelector(':scope > h3');
+      addDoc('page', service + (heading ? ' \u00b7 ' + heading.textContent.trim() : (blockTitle ? ' \u00b7 ' + blockTitle.textContent.trim() : '')), el.innerText, '#' + sec.id);
+    });
+  });
+  addDoc('page', 'Location', 'The Makerspace is in Texas Tech University Library, Room 210, at the front desk. Email make@ttu.edu with questions.', '#top');
+  (window.MAKERSPACE_FAQ || []).forEach(function (f) { addDoc('faq', f.q, f.a, ''); });
+  // Each sentence of FACTS becomes a short, readable basic answer
+  var TOPIC_LINK = { '3D': '#printing', 'PRINTERS': '#printing', 'FAILED': '#printing', 'SOLDERING': '#soldering', 'TEXTILE': '#textiles', 'LASER': '#laser' };
+  FACTS.split('\n').forEach(function (line) {
+    var m = line.match(/^([A-Z0-9 ]+?):\s*(.*)$/);
+    var topic = m ? m[1] : 'Makerspace';
+    var body = m ? m[2] : line;
+    var href = '#top';
+    Object.keys(TOPIC_LINK).forEach(function (k) { if (topic.indexOf(k) === 0) href = TOPIC_LINK[k]; });
+    body.split(/(?<=[.!?])\s+(?=[A-Z0-9"])/).forEach(function (sent, i) {
+      sent = sent.replace(/^\d\)\s*/, '');
+      var d = { kind: 'fact', title: topic, text: sent, href: href, order: i };
+      d.set = new Set(tokens(topic + ' ' + sent + (sent.indexOf('$') !== -1 ? ' price' : '')));
+      docs.push(d);
+    });
+  });
+  var idf = new Map();
+  (function () {
+    var df = new Map();
+    docs.forEach(function (d) { d.set.forEach(function (w) { df.set(w, (df.get(w) || 0) + 1); }); });
+    df.forEach(function (n, w) { idf.set(w, Math.log(1 + docs.length / n)); });
+  })();
+  function search(query, kind) {
+    var qt = Array.from(new Set(tokens(query)));
+    if (!qt.length) return [];
+    return docs.filter(function (d) { return !kind || d.kind === kind; }).map(function (d) {
+      var s = 0, hit = 0;
+      qt.forEach(function (w) { if (d.set.has(w)) { s += idf.get(w) || 0; hit++; } });
+      return { d: d, s: s * (hit / qt.length + 0.5) };
+    }).filter(function (x) { return x.s > 0; }).sort(function (a, b) { return b.s - a.s; });
+  }
+
+  /* ---------- Chat bubbles ---------- */
+  function bubble(cls, text) {
+    var n = document.createElement('div');
+    n.className = 'msg ' + cls;
+    n.textContent = text;
+    log.appendChild(n);
+    log.scrollTop = log.scrollHeight;
+    return n;
+  }
+  function trim(s, n) { return s.length > n ? s.slice(0, n).replace(/\s+\S*$/, '') + '\u2026' : s; }
+
+  /* ---------- Basic answers (no AI) ---------- */
+  function basicAnswer(q) {
+    var facts = search(q, 'fact'), faqs = search(q, 'faq');
+    var topFact = facts[0] ? facts[0].s : 0, topFaq = faqs[0] ? faqs[0].s : 0;
+    if (Math.max(topFact, topFaq) < 1.2) {
+      bubble('bot', 'Sorry, I\'m not sure about that one. Try asking another way, or email make@ttu.edu and a student assistant will help you.');
+      return;
+    }
+    var best, text;
+    if (topFaq > topFact * 1.2) {
+      best = faqs[0].d; text = trim(best.text, 400);
+    } else {
+      best = facts[0].d;
+      // Add up to two more sentences from the same topic when they match well too
+      var picks = facts.filter(function (r) { return r.d.title === best.title && r.s >= topFact * 0.6; }).slice(0, 3)
+        .map(function (r) { return r.d; }).sort(function (a, b) { return a.order - b.order; });
+      text = picks.map(function (d) { return d.text; }).join(' ');
+    }
+    var b = bubble('bot', text);
+    var sectionName = { '#printing': '3D Printing', '#soldering': 'Soldering', '#textiles': 'Textiles', '#laser': 'Laser Cutter & Cricut' }[best.href];
+    if (best.href && sectionName) {
+      best = { href: best.href, title: sectionName };
+      var a = document.createElement('a');
+      a.className = 'ans-link'; a.href = best.href; a.textContent = 'See ' + best.title.split(' \u00b7 ')[0];
+      a.addEventListener('click', function () { if (window.innerWidth < 760) setOpen(false); });
+      b.appendChild(document.createElement('br'));
+      b.appendChild(a);
+    }
+  }
+
+  /* ---------- AI answers (Ollama on this computer) ---------- */
+  function systemPrompt(q) {
+    var related = search(q + ' ' + history.filter(function (m) { return m.role === 'user'; }).slice(-1).map(function (m) { return m.content; }).join(' '), 'faq')
+      .slice(0, 6).map(function (r) { return 'Q: ' + trim(r.d.title, 250) + '\nA: ' + trim(r.d.text, 400); }).join('\n\n');
+    return 'You are a friendly student assistant at the TTU Library Makerspace front desk kiosk, chatting with a visitor.\n' +
+      'Rules:\n- Use ONLY the FACTS and PAST ANSWERS below. Never make up prices, hours, rules, people, or machines.\n' +
+      '- PAST ANSWERS are older staff replies to similar questions. If one disagrees with FACTS, follow FACTS.\n' +
+      '- If the answer is not in them, say you are not sure and suggest asking the student assistant at the front desk or emailing make@ttu.edu.\n' +
+      '- Answer in 1 to 4 short, natural sentences. Use a short numbered list only for step-by-step processes.\n' +
+      '- Always reply in English only, even if the visitor writes in another language.\n\n' +
+      'FACTS:\n' + FACTS + (related ? '\n\nPAST ANSWERS:\n' + related : '');
+  }
+
+  var checking = null;
+  function checkAI() {
+    if (checking) return checking;
+    checking = (async function () {
+      try {
+        var r = await fetch(OLLAMA_URL + '/api/tags');
+        var j = await r.json();
+        var names = (j.models || []).map(function (m) { return m.name; });
+        aiReady = names.indexOf(OLLAMA_MODEL) !== -1 || names.indexOf(OLLAMA_MODEL + ':latest') !== -1;
+        statusLine.textContent = aiReady ? 'AI answers on' : 'Basic answers (AI model not found)';
+        // Load the model into memory now and keep it there, so the first answer is fast
+        if (aiReady) fetch(OLLAMA_URL + '/api/generate', { method: 'POST', body: JSON.stringify({ model: OLLAMA_MODEL, keep_alive: '24h' }) }).catch(function () {});
+      } catch (e) {
+        aiReady = false;
+        statusLine.textContent = 'Basic answers (AI is not running)';
+      } finally {
+        setTimeout(function () { checking = null; }, 30000);
+      }
+    })();
+    return checking;
+  }
+  checkAI();
+
+  async function aiAnswer(q) {
+    var b = bubble('bot thinking', 'Thinking\u2026');
+    var messages = [{ role: 'system', content: systemPrompt(q) }].concat(history.slice(-6), [{ role: 'user', content: q }]);
+    var text = '';
+    try {
+      var res = await fetch(OLLAMA_URL + '/api/chat', {
+        method: 'POST',
+        body: JSON.stringify({ model: OLLAMA_MODEL, messages: messages, stream: true, keep_alive: '24h', options: { temperature: 0.2, num_predict: 350 } })
+      });
+      if (!res.ok || !res.body) throw new Error('HTTP ' + res.status);
+      var reader = res.body.getReader(), decoder = new TextDecoder(), buf = '';
+      while (true) {
+        var chunk = await reader.read();
+        if (chunk.done) break;
+        buf += decoder.decode(chunk.value, { stream: true });
+        var lines = buf.split('\n');
+        buf = lines.pop();
+        lines.forEach(function (line) {
+          if (!line.trim()) return;
+          var data = JSON.parse(line);
+          var delta = data.message && data.message.content || '';
+          if (!delta) return;
+          text += delta;
+          b.classList.remove('thinking');
+          b.textContent = text;
+          log.scrollTop = log.scrollHeight;
+        });
+      }
+      if (!text.trim()) throw new Error('empty');
+      history.push({ role: 'user', content: q }, { role: 'assistant', content: text });
+    } catch (e) {
+      b.remove();
+      aiReady = false;
+      statusLine.textContent = 'Basic answers (AI is not running)';
+      basicAnswer(q);
+    }
+  }
+
+  /* ---------- Clear the chat for the next visitor ---------- */
+  var idleTimer = null;
+  function resetChat() {
+    history = [];
+    log.innerHTML = startLog;
+    suggest = document.getElementById('chat-suggest');
+    input.value = '';
+    if (!panel.classList.contains('closed')) setOpen(false);
+  }
+  function bumpIdle() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(resetChat, IDLE_SECONDS * 1000);
+  }
+  ['pointerdown', 'keydown', 'input'].forEach(function (ev) { document.addEventListener(ev, bumpIdle, { passive: true }); });
+
+  async function ask(text) {
+    text = text.trim();
+    if (!text || busy) return;
+    if (suggest) { suggest.remove(); suggest = null; }
+    busy = true; send.disabled = true;
+    bubble('user', text);
+    // English only: questions without any English words get a short notice
+    if (!/[a-z]{2,}/i.test(text) || /[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AF\u3040-\u30FF\u3400-\u9FFF]/.test(text)) {
+      bubble('bot', 'Sorry, I can only answer questions in English. Please ask again in English, or email make@ttu.edu.');
+      busy = false; send.disabled = false;
+      return;
+    }
+    try {
+      if (!aiReady) await checkAI();
+      if (aiReady) await aiAnswer(text); else basicAnswer(text);
+    } finally {
+      busy = false; send.disabled = false;
+    }
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var t = input.value; input.value = ''; input.style.height = '';
+    ask(t);
+  });
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
+  });
+  input.addEventListener('input', function () { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 120) + 'px'; });
+  log.addEventListener('click', function (e) { if (e.target.tagName === 'BUTTON' && e.target.closest('.suggest')) ask(e.target.textContent); });
+})();
+</script>
+
+<script>
+(function () {
+  // Copy buttons
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var text = btn.getAttribute('data-copy');
+      var done = function () {
+        btn.textContent = 'Copied';
+        btn.classList.add('done');
+        setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1600);
+      };
+      var fallback = function () {
+        var target = btn.parentElement.querySelector('code, q');
+        if (!target) return;
+        var range = document.createRange();
+        range.selectNodeContents(target);
+        var sel = window.getSelection();
+        sel.removeAllRanges(); sel.addRange(range);
+        btn.textContent = 'Selected';
+        setTimeout(function () { btn.textContent = 'Copy'; }, 1600);
+      };
+      try {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } catch (e) { fallback(); }
+    });
+  });
+
+  // Price estimator
+  var TAX = 0.0825;
+  var mat = document.getElementById('est-material');
+  var grams = document.getElementById('est-grams');
+  var form = document.getElementById('estimator');
+  var rows = Array.prototype.slice.call(document.querySelectorAll('.printer-row'));
+  var runsError = document.getElementById('runs-error');
+  var fmt = function (n) { return '$' + n.toFixed(2); };
+  var RATES = { abs: 0.10, pla: 0.30, tpu: 0.30 };
+  function filterPrinters() {
+    var m = mat.value;
+    rows.forEach(function (row) {
+      var ok = row.getAttribute('data-materials').split(' ').indexOf(m) !== -1;
+      row.hidden = !ok;
+      if (!ok) row.querySelector('input[type="checkbox"]').checked = false;
+    });
+    // Keep at least one printer selected so the service fee is included
+    var visible = rows.filter(function (row) { return !row.hidden; });
+    if (!visible.some(function (row) { return row.querySelector('input[type="checkbox"]').checked; }) && visible[0]) {
+      visible[0].querySelector('input[type="checkbox"]').checked = true;
+    }
+  }
+  function serviceFee() {
+    var total = 0, bad = false;
+    rows.forEach(function (row) {
+      var box = row.querySelector('input[type="checkbox"]');
+      var runsWrap = row.querySelector('.runs');
+      var n = row.querySelector('.runs input');
+      runsWrap.hidden = !box.checked;
+      row.classList.toggle('on', box.checked);
+      if (!box.checked) return;
+      var v = Number(n.value);
+      if (!Number.isInteger(v) || v < 1) { bad = true; n.setAttribute('aria-invalid', 'true'); return; }
+      n.removeAttribute('aria-invalid');
+      total += v * parseFloat(row.getAttribute('data-fee'));
+    });
+    runsError.hidden = !bad;
+    return total;
+  }
+  rows.forEach(function (row) {
+    row.querySelector('input[type="checkbox"]').addEventListener('change', function (e) {
+      calc();
+      if (e.target.checked) { var n = row.querySelector('.runs input'); n.focus(); n.select(); }
+    });
+    var n = row.querySelector('.runs input');
+    n.addEventListener('input', calc);
+    n.addEventListener('keydown', function (e) { if (['.', ',', 'e', 'E', '-', '+'].indexOf(e.key) !== -1) e.preventDefault(); });
+  });
+  function calc() {
+    var g = Math.max(0, parseFloat(grams.value) || 0);
+    var material = Math.round(g * RATES[mat.value] * 100) / 100;
+    var service = serviceFee();
+    var tax = Math.round((material + service) * TAX * 100) / 100;
+    document.getElementById('out-material').textContent = fmt(material);
+    document.getElementById('out-fee').textContent = fmt(service);
+    document.getElementById('out-tax').textContent = fmt(tax);
+    document.getElementById('out-total').textContent = fmt(material + service + tax);
+  }
+  grams.addEventListener('input', calc);
+  mat.addEventListener('change', function () { filterPrinters(); calc(); });
+  form.addEventListener('submit', function (e) { e.preventDefault(); });
+  filterPrinters();
+  calc();
+
+  // Highlight the current section in the nav
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav a'));
+  var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  function onScroll() {
+    var y = window.scrollY + 120, current = -1;
+    sections.forEach(function (s, i) { if (s && s.offsetTop <= y) current = i; });
+    links.forEach(function (a, i) { a.classList.toggle('active', i === current); });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>

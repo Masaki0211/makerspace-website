@@ -1,0 +1,5 @@
+# Private question-log data - never commit
+*.csv
+*.xlsx
+*.xlsm
+*.xls
